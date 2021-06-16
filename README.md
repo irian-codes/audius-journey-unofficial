@@ -1,6 +1,6 @@
 # Audius Journey app
 
-This a [Flutter](https://flutter.dev/) app based around the [Audius](https://audius.org/) project, a decentralised music streaming service similar to Spotify. The idea of Audius is to offer music in a non custodial way, so there's not only 1 company that controls it all, but the community.
+This a [Flutter](https://flutter.dev/) app based around the [Audius](https://audius.org/) project, a decentralised music streaming service similar to SoundCloud. The idea of Audius is to offer music in a non custodial way, so there's not only 1 company that controls it all, but the community.
 
 Audius Journey is an unofficial music player that tries to recommend you songs from the most trending tracks based on the rating you provide. There are rating buttons, but the recommendation algorithm also takes into account skipping or just let a song play.
 
