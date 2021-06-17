@@ -17,3 +17,9 @@ It only offers songs from the trending list offered by the Audius API. It could 
 ## Compatibility
 
 It has been tested only with Android OS. Other systems may misbehave and are unsupported.
+
+# Disclaimer
+
+This is a personal project of mine. I have no relation with Audius, Inc. of any kind. This project does not endorse Audius in any way and should be considered totally unrelated.
+
+And also as a general clause: References to any specific company, products, processes, or services by trade name, trademark, manufacturer, or otherwise does not necessarily constitute or imply its endorsement, recommendation, or favouring.
