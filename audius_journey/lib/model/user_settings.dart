@@ -16,26 +16,30 @@ class UserSettings {
   SharedPreferences? _prefs;
 
   UserSettings._internal() {
-    this.initialise();
+    this._initialise();
   }
 
   factory UserSettings() {
     return _instance;
   }
 
-  Future<void> initialise() async {
+  Future<void> _initialise() async {
     if (this._prefs == null) {
       this._prefs = await SharedPreferences.getInstance();
     }
   }
 
+  /// Loads all the settings of the app and it will change the state when it finishes.
+  ///
+  /// Call it with await if you want to ensure data is loaded before proceeding,
+  /// but if you manage states well it shouldn't be necessary.
   Future<void> loadSettings(BuildContext context) async {
     await this._getSavedThemeColor(context);
     await this._getSavedTrendingTime(context);
   }
 
   Future<TrendingTime?> _getSavedTrendingTime(BuildContext context) async {
-    await this.initialise();
+    await this._initialise();
 
     late TrendingTime tRtime;
 
@@ -50,17 +54,20 @@ class UserSettings {
     return tRtime;
   }
 
-  Future<void> saveTrendingTime(BuildContext context, TrendingTime time) async {
-    await this.initialise();
+  /// Saves the period of time to consider for the list of trending songs.
+  ///
+  /// Call this and it will change the state when it finishes saving.
+  void saveTrendingTime(BuildContext context, TrendingTime time) async {
+    await this._initialise();
 
     if (this._prefs != null) {
-      await this._prefs!.setString('tr_time', time.toString());
       context.read<AppState>().trendingTime = time;
+      await this._prefs!.setString('tr_time', time.toString());
     }
   }
 
   Future<Color?> _getSavedThemeColor(BuildContext context) async {
-    await this.initialise();
+    await this._initialise();
 
     int? colorCode = this._prefs?.getInt('theme_color');
 
@@ -74,17 +81,20 @@ class UserSettings {
     }
   }
 
-  Future<void> saveThemeColor(BuildContext context, Color color) async {
-    await this.initialise();
+  /// Saves the main theme color of the app.
+  ///
+  /// Call this and it will change the state when it finishes saving.
+  void saveThemeColor(BuildContext context, Color color) async {
+    await this._initialise();
 
     if (this._prefs != null) {
-      await this._prefs!.setInt('theme_color', color.value);
       context.read<AppState>().themeColor = color;
+      await this._prefs!.setInt('theme_color', color.value);
     }
   }
 
   Future<bool> clearAllPrefs() async {
-    await this.initialise();
+    await this._initialise();
 
     return (await this._prefs?.clear()) ?? false;
   }
