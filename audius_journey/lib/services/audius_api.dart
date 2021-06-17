@@ -481,7 +481,9 @@ class TrendingTime {
 
   toString() => '$_value';
 
-  static TrendingTime? fromString(String? value) {
+  /// Creates a new instance from a string value.
+  /// Throws Exception if it couldn't it due to an invalid parameter.
+  static TrendingTime fromString(String value) {
     if (value == TrendingTime.ALL.toString()) {
       return TrendingTime.ALL;
     } else if (value == TrendingTime.MONTH.toString()) {
@@ -489,7 +491,7 @@ class TrendingTime {
     } else if (value == TrendingTime.WEEK.toString()) {
       return TrendingTime.WEEK;
     } else {
-      return null;
+      throw Exception("Invalid string");
     }
   }
 
