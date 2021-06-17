@@ -15,21 +15,99 @@ import 'package:http/http.dart' as http;
 class AudiusAPI {
   static final _TAG = "AudiusAPI: ";
   static final AudiusAPI _instance = AudiusAPI._internal();
-  final int _maxNumOfTrendingTracks = 100;
+  factory AudiusAPI() {
+    return _instance;
+  }
+
+  AudiusAPI._internal();
+
+  final Duration longDuration = Duration(seconds: 10);
+  final Duration shortDuration = Duration(seconds: 3);
+
   List<String> _apiHosts = [];
   String _baseURL = "";
-  bool get isInitialised => this._apiHosts.length > 0;
-  final Duration shortDuration = Duration(seconds: 3);
-  final Duration longDuration = Duration(seconds: 10);
 
   /// Check this to see if the API is still trying to initialise. So you
   /// don't call initialise twice
   bool _isInitialising = false;
 
-  AudiusAPI._internal();
+  int _retriesCounter = 0;
 
-  factory AudiusAPI() {
-    return _instance;
+  bool get isInitialised => this._apiHosts.length > 0;
+
+  /// Returns if the API is initialised, if it isn't it calls the
+  /// initialisation method with a 10 second timeout.
+  Future<bool> _initialise() async {
+    Future<bool> initialisationChecker;
+
+    // If the initialisation process is ongoing alredy we check the
+    // [initialised] variable every second.
+    if (this._isInitialising) {
+      print(_TAG + "Checking initialisation since it was alrady in progress.");
+
+      initialisationChecker = Future<bool>(() async {
+        for (int i = 0; i < 10; i++) {
+          if (this.isInitialised) {
+            return true;
+          }
+
+          await Future.delayed(Duration(seconds: 1));
+        }
+
+        return false;
+      });
+      // If the initialisation process is stopped then we start it again.
+      // Since it will complete instantly if the initialisation was
+      // successful.
+    } else {
+      print(_TAG + "Started initialisation.");
+
+      initialisationChecker = Future<bool>(
+        () async {
+          return (await this._recursiveInitialise()).isValue;
+        },
+      );
+    }
+
+    return initialisationChecker.timeout(
+      this.longDuration,
+      onTimeout: () => false,
+    );
+  }
+
+  Future<Result<void>> _recursiveInitialise() async {
+    this._isInitialising = true;
+
+    if (_retriesCounter > 5) {
+      Result error = Result.error(
+        APIException(
+          message:
+              "Couldn't make request because the API couldn't initalise after ${this._retriesCounter} times.",
+        ),
+      );
+
+      this._retriesCounter = 0;
+      this._isInitialising = false;
+
+      return error;
+    }
+
+    if (this._apiHosts.length > 0) {
+      this._retriesCounter = 0;
+      this._isInitialising = false;
+
+      return Result.value(0);
+    } else {
+      return await Future<Result<void>>.delayed(
+        Duration(milliseconds: 1000),
+        () async {
+          this._retriesCounter += 1;
+          await this._getAPIHosts();
+
+          return this._recursiveInitialise();
+        },
+      );
+    }
   }
 
   /// As a decentralised server, there are different API hosts, so we
@@ -98,82 +176,6 @@ class AudiusAPI {
 
     String selectedHost = hostsList[Random().nextInt(hostsList.length)];
     this._baseURL = selectedHost + "/v1/";
-  }
-
-  int _retriesCounter = 0;
-  Future<Result<void>> _recursiveInitialise() async {
-    this._isInitialising = true;
-
-    if (_retriesCounter > 5) {
-      Result error = Result.error(
-        APIException(
-          message:
-              "Couldn't make request because the API couldn't initalise after ${this._retriesCounter} times.",
-        ),
-      );
-
-      this._retriesCounter = 0;
-      this._isInitialising = false;
-
-      return error;
-    }
-
-    if (this._apiHosts.length > 0) {
-      this._retriesCounter = 0;
-      this._isInitialising = false;
-
-      return Result.value(0);
-    } else {
-      return await Future<Result<void>>.delayed(
-        Duration(milliseconds: 1000),
-        () async {
-          this._retriesCounter += 1;
-          await this._getAPIHosts();
-
-          return this._recursiveInitialise();
-        },
-      );
-    }
-  }
-
-  /// Returns if the API is initialised, if it isn't it calls the
-  /// initialisation method with a 10 second timeout.
-  Future<bool> _initialise() async {
-    Future<bool> initialisationChecker;
-
-    // If the initialisation process is ongoing alredy we check the
-    // [initialised] variable every second.
-    if (this._isInitialising) {
-      print(_TAG + "Checking initialisation since it was alrady in progress.");
-
-      initialisationChecker = Future<bool>(() async {
-        for (int i = 0; i < 10; i++) {
-          if (this.isInitialised) {
-            return true;
-          }
-
-          await Future.delayed(Duration(seconds: 1));
-        }
-
-        return false;
-      });
-      // If the initialisation process is stopped then we start it again.
-      // Since it will complete instantly if the initialisation was
-      // successful.
-    } else {
-      print(_TAG + "Started initialisation.");
-
-      initialisationChecker = Future<bool>(
-        () async {
-          return (await this._recursiveInitialise()).isValue;
-        },
-      );
-    }
-
-    return initialisationChecker.timeout(
-      this.longDuration,
-      onTimeout: () => false,
-    );
   }
 
   /// Gets the list of trending tracks based on the time passed as [time]
@@ -488,7 +490,9 @@ class AudiusAPI {
 
 class APIEndpoints {
   static final String trendingTracks = "tracks/trending";
+
   static String singleTrackInfo(String trackId) => "tracks/$trackId";
+
   static String singleTrackMp3(String trackId) =>
       "${singleTrackInfo(trackId)}/stream";
 }
@@ -500,8 +504,13 @@ class APIQueryVariables {
 }
 
 class TrendingTime {
-  final _value;
   const TrendingTime._internal(this._value);
+
+  static const ALL = const TrendingTime._internal('allTime');
+  static const MONTH = const TrendingTime._internal('month');
+  static const WEEK = const TrendingTime._internal('week');
+
+  final _value;
 
   toString() => '$_value';
 
@@ -519,17 +528,9 @@ class TrendingTime {
       throw Exception("Invalid string");
     }
   }
-
-  static const WEEK = const TrendingTime._internal('week');
-  static const MONTH = const TrendingTime._internal('month');
-  static const ALL = const TrendingTime._internal('allTime');
 }
 
 class APIException implements Exception {
-  final String message;
-  final String errorType;
-  final dynamic innerException;
-
   APIException({
     required this.message,
     this.errorType = "Unespecified",
@@ -539,6 +540,10 @@ class APIException implements Exception {
     // time.
     print(this.toString());
   }
+
+  final String errorType;
+  final dynamic innerException;
+  final String message;
 
   @override
   String toString() {
