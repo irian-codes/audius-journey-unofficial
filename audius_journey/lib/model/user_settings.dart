@@ -30,11 +30,11 @@ class UserSettings {
   }
 
   Future<void> loadSettings(BuildContext context) async {
-    await this.getSavedThemeColor(context);
-    await this.getSavedTrendingTime(context);
+    await this._getSavedThemeColor(context);
+    await this._getSavedTrendingTime(context);
   }
 
-  Future<TrendingTime?> getSavedTrendingTime(BuildContext context) async {
+  Future<TrendingTime?> _getSavedTrendingTime(BuildContext context) async {
     await this.initialise();
 
     late TrendingTime tRtime;
@@ -59,7 +59,7 @@ class UserSettings {
     }
   }
 
-  Future<Color?> getSavedThemeColor(BuildContext context) async {
+  Future<Color?> _getSavedThemeColor(BuildContext context) async {
     await this.initialise();
 
     int? colorCode = this._prefs?.getInt('theme_color');
