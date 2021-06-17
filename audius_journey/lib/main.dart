@@ -36,6 +36,7 @@ void main() {
 class MyApp extends StatelessWidget {
   static final String _TAG = "MyApp: ";
 
+  // ignore: long-method
   void _registerPlayerCallbacks(BuildContext context) {
     AudioManager.instance.onEvents((events, args) {
       switch (events) {
