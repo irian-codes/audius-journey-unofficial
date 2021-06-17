@@ -15,7 +15,9 @@
 // Original source code at https://github.com/iampawan/Flutter-Music-Player
 
 // Modifications copyright (C) 2021 Irian Montón Beltrán
-// Changed name of the original file from 'mp_control_button.dart' to the current one.
+//
+// Changed name of the original file from 'mp_control_button.dart' to the
+// current one.
 
 import 'package:flutter/material.dart';
 

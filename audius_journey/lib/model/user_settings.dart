@@ -29,10 +29,11 @@ class UserSettings {
     }
   }
 
-  /// Loads all the settings of the app and it will change the state when it finishes.
+  /// Loads all the settings of the app and it will change the state when
+  /// it finishes.
   ///
-  /// Call it with await if you want to ensure data is loaded before proceeding,
-  /// but if you manage states well it shouldn't be necessary.
+  /// Call it with await if you want to ensure data is loaded before
+  /// proceeding, but if you manage states well it shouldn't be necessary.
   Future<void> loadSettings(BuildContext context) async {
     await this._getSavedThemeColor(context);
     await this._getSavedTrendingTime(context);

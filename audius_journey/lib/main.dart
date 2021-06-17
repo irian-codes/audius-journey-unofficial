@@ -96,7 +96,8 @@ class MyApp extends StatelessWidget {
 
           context.read<PlayerState>().setStoppedState();
 
-          // Since this is a plugin error, it seems more serious and we don't want to try a new track. Better to restart the app.
+          // Since this is a plugin error, it seems more serious and we
+          // don't want to try a new track. Better to restart the app.
           context
               .read<AlgorithmState>()
               .setCurrentTrack(track: null, tryWithAnotherTrack: false);
@@ -104,7 +105,9 @@ class MyApp extends StatelessWidget {
 
         case AudioManagerEvents.stop:
           if (context.read<AlgorithmState>().currentTrack != null) {
-            // We only set the track to null when it's a real stop, not one caused by loading the track, because changing the track triggers an stop event.
+            // We only set the track to null when it's a real stop, not one
+            // caused by loading the track, because changing the track
+            // triggers an stop event.
             if (!context.read<PlayerState>().isLoading) {
               context.read<PlayerState>().isReady = false;
               context.read<AlgorithmState>().setCurrentTrack(track: null);

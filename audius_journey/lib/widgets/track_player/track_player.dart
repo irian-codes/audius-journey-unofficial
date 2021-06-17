@@ -18,7 +18,8 @@ import 'control_button.dart';
 class TrackPlayer extends StatelessWidget {
   static final String _TAG = "TrackPlayer: ";
 
-  /// Changes current track to next or previous track depending on the [next] parameter value.
+  /// Changes current track to next or previous track depending on the
+  /// [next] parameter value.
   void _changeTrack({required BuildContext context, required bool next}) {
     if (next) {
       context

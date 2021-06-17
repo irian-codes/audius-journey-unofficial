@@ -15,9 +15,11 @@
 // Original source code at https://github.com/iampawan/Flutter-Music-Player
 
 // Modifications copyright (C) 2021 Irian Montón Beltrán
-// Merged different original files into this file.
-// Replaced all the original behaviour code with one fit for this project.
-// Modified UI code to incorporate aspects of this project but maintaing a visual aspect close to the original.
+//
+// Merged different original files into this file. Replaced all the
+// original behaviour code with one fit for this project. Modified UI code
+// to incorporate aspects of this project but maintaining a visual aspect
+// close to the original.
 
 // Copyright (c) 2021 Irian Montón Beltrán
 //
@@ -49,7 +51,8 @@ class TrackPlayerScreen extends StatelessWidget {
       String? currentTrackId = this._currentTrack?.id;
       String? playingUrl = AudioManager.instance.info?.url;
 
-      // Check that we don't make a request for the track that's already playing.
+      // Check that we don't make a request for the track that's already
+      // playing.
       if (currentTrackId != null && playingUrl != null) {
         if (playingUrl.contains(currentTrackId)) {
           return;
@@ -107,14 +110,16 @@ class TrackPlayerScreen extends StatelessWidget {
     this._currentTrack = context.watch<AlgorithmState>().currentTrack;
 
     if (!isLoading && this._currentTrack == null) {
-      // We need to add it here or it will crash because for whatever reason it needs to finish building to pop.
+      // We need to add it here or it will crash because for whatever
+      // reason it needs to finish building to pop.
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         Navigator.pop(context);
         print(_TAG + "Closing player screen");
       });
     }
 
-    // Scheduling the start of the music player after the UI has been built.
+    // Scheduling the start of the music player after the UI has been
+    // built.
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       this._playTrack(context);
     });

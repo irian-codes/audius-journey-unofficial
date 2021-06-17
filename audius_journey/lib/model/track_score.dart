@@ -13,11 +13,14 @@ class TrackScore extends TrackInfo implements Comparable<TrackScore> {
   final ScoreFactors scoreFactors;
   int _score = 0;
   int get score => _score;
-  // We store the order where the track was played, 0 meaning it never played, to get it in case the user wants to listen to previously listened tracks.
+  // We store the order where the track was played, 0 meaning it never
+  // played, to get it in case the user wants to listen to previously
+  // listened tracks.
   int _playOrder = 0;
   int get playOrder => _playOrder;
   set playOrder(int value) {
-    // Cannot set number to 0 again or negative, otherwise it would imply it has not been played which is not the case.
+    // Cannot set number to 0 again or negative, otherwise it would imply
+    // it has not been played which is not the case.
     if (value > 0) {
       this._playOrder = value;
     }
@@ -26,7 +29,8 @@ class TrackScore extends TrackInfo implements Comparable<TrackScore> {
   TrackAction _lastRatingAction = TrackAction.NONE;
   TrackAction get lastRatingAction => this._lastRatingAction;
   set lastRatingAction(TrackAction action) {
-    // NONE is a state that is only meant to be used to mark the song was never played before. Therefore you can't update to this value.
+    // NONE is a state that is only meant to be used to mark the song was
+    // never played before. Therefore you can't update to this value.
     if (action != TrackAction.NONE) {
       this._lastRatingAction = action;
     }

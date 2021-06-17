@@ -22,7 +22,8 @@ class AudiusAPI {
   final Duration shortDuration = Duration(seconds: 3);
   final Duration longDuration = Duration(seconds: 10);
 
-  /// Check this to see if the API is still trying to initialise. So you don't call initialise twice
+  /// Check this to see if the API is still trying to initialise. So you
+  /// don't call initialise twice
   bool _isInitialising = false;
 
   AudiusAPI._internal();
@@ -31,7 +32,8 @@ class AudiusAPI {
     return _instance;
   }
 
-  /// As a decentralised server, there are different API hosts, so we maintain a list to try to get a valid one a request after an error.
+  /// As a decentralised server, there are different API hosts, so we
+  /// maintain a list to try to get a valid one a request after an error.
   Future<Result<void>> _getAPIHosts() async {
     http.Request request = http.Request(
       'GET',
@@ -134,11 +136,13 @@ class AudiusAPI {
     }
   }
 
-  /// Returns if the API is initialised, if it isn't it calls the initialisation method with a 10 second timeout.
+  /// Returns if the API is initialised, if it isn't it calls the
+  /// initialisation method with a 10 second timeout.
   Future<bool> _initialise() async {
     Future<bool> initialisationChecker;
 
-    // If the initialisation process is ongoing alredy we check the [initialised] variable every second.
+    // If the initialisation process is ongoing alredy we check the
+    // [initialised] variable every second.
     if (this._isInitialising) {
       print(_TAG + "Checking initialisation since it was alrady in progress.");
 
@@ -153,7 +157,9 @@ class AudiusAPI {
 
         return false;
       });
-      // If the initialisation process is stopped then we start it again. Since it will complete instantly if the initialisation was successful.
+      // If the initialisation process is stopped then we start it again.
+      // Since it will complete instantly if the initialisation was
+      // successful.
     } else {
       print(_TAG + "Started initialisation.");
 
@@ -170,7 +176,8 @@ class AudiusAPI {
     );
   }
 
-  /// Gets the list of trending tracks based on the time passed as [time] parameter.
+  /// Gets the list of trending tracks based on the time passed as [time]
+  /// parameter.
   Future<Result<List<TrackInfo>>> getTrendingTracks({
     required TrendingTime time,
   }) async {
@@ -202,7 +209,8 @@ class AudiusAPI {
     try {
       response = await request.send().timeout(this.longDuration);
     } catch (e) {
-      // If a request fails we'll change host to try our luck and maybe we solve the issue for the next time.
+      // If a request fails we'll change host to try our luck and maybe we
+      // solve the issue for the next time.
       this._selectRandomAPIHost(excludeCurrentHost: true);
 
       return Result.error(
@@ -228,7 +236,8 @@ class AudiusAPI {
 
         return Result.value(listOfTracks);
       } catch (e) {
-        // If a request fails we'll change host to try our luck and maybe we solve the issue for the next time.
+        // If a request fails we'll change host to try our luck and maybe
+        // we solve the issue for the next time.
         this._selectRandomAPIHost(excludeCurrentHost: true);
 
         return Result.error(
@@ -240,7 +249,8 @@ class AudiusAPI {
         );
       }
     } else {
-      // If a request fails we'll change host to try our luck and maybe we solve the issue for the next time.
+      // If a request fails we'll change host to try our luck and maybe we
+      // solve the issue for the next time.
       this._selectRandomAPIHost(excludeCurrentHost: true);
 
       return Result.error(
@@ -253,7 +263,9 @@ class AudiusAPI {
     }
   }
 
-  /// Tries to get a valid MP3 track link. This is a complex method since, this being a decentralised service, we can have differnt Urls, some valid and some not.
+  /// Tries to get a valid MP3 track link. This is a complex method since,
+  /// this being a decentralised service, we can have differnt Urls, some
+  /// valid and some not.
   Future<Result<String>> getTrackMp3Url(String trackId) async {
     if (!(await this._initialise())) {
       return Result.error(
@@ -269,8 +281,10 @@ class AudiusAPI {
         "?" +
         "${APIQueryVariables.appName}";
 
-    // Audius API redirects us, and we prefer to get the final link ourselves to manipulate it later.
-    // We need the deep URL because we need to know, for later, if it matches the creatornode pattern needed to call [this._generateCreatorNodeUrls]
+    // Audius API redirects us, and we prefer to get the final link
+    // ourselves to manipulate it later. We need the deep URL because we
+    // need to know, for later, if it matches the creatornode pattern
+    // needed to call [this._generateCreatorNodeUrls]
     Result<String> redirectionUrlResult =
         await this._getDeepestRedirectionUrl(url);
 
@@ -280,7 +294,9 @@ class AudiusAPI {
       url = redirectionUrlResult.asValue?.value ?? "";
     }
 
-    // We try to get as many URLs as possible since some of them may error out. This is a decentralised service after all, and not the first node we got the redirection link may be reliable.
+    // We try to get as many URLs as possible since some of them may error
+    // out. This is a decentralised service after all, and not the first
+    // node we got the redirection link may be reliable.
     List<String> urlsToTry = this._generateCreatorNodeUrls(url);
 
     late Result<String> requestsResult;
@@ -318,9 +334,11 @@ class AudiusAPI {
       }
     }
 
-    // If the code reaches here it means we couldn't get any link to work in the end.
+    // If the code reaches here it means we couldn't get any link to work
+    // in the end.
 
-    // If a request fails we'll change host to try our luck and maybe we solve the issue for the next time.
+    // If a request fails we'll change host to try our luck and maybe we
+    // solve the issue for the next time.
     this._selectRandomAPIHost(excludeCurrentHost: true);
 
     return requestsResult;
@@ -336,7 +354,9 @@ class AudiusAPI {
       Result<String> result =
           (await this._getRedirectionUrl(currentRedirectUrl));
 
-      // We only care about non API errors here because if for whatever reason we couldn't get the redirect url we'll try with the first one.
+      // We only care about non API errors here because if for whatever
+      // reason we couldn't get the redirect url we'll try with the first
+      // one.
       if (result.asError != null && !(result.asError!.error is APIException)) {
         return result;
       } else {
@@ -398,7 +418,8 @@ class AudiusAPI {
 
       return Result.value(endText);
     } else {
-      // If a request fails we'll change host to try our luck and maybe we solve the issue for the next time.
+      // If a request fails we'll change host to try our luck and maybe we
+      // solve the issue for the next time.
       this._selectRandomAPIHost(excludeCurrentHost: true);
 
       return Result.error(
@@ -414,15 +435,18 @@ class AudiusAPI {
 
   /// Generates different possibles urls for the same track.
   ///
-  /// It seems file provider servers match a same URL pattern for a track: https://creatornode0.audius.co/tracks/stream/5QBJ1
-  /// Where the '0' in 'creatornode0' can be substituted by any number. Usually they are creatornode2, creatornode3, etc.
-  /// So it returns a list of those possible urls.
+  /// It seems file provider servers match a same URL pattern for a track:
+  /// https://creatornode0.audius.co/tracks/stream/5QBJ1 Where the '0' in
+  /// 'creatornode0' can be substituted by any number. Usually they are
+  /// creatornode2, creatornode3, etc. So it returns a list of those
+  /// possible urls.
   List<String> _generateCreatorNodeUrls(final String baseUrl) {
     if (baseUrl.isEmpty) {
       return [baseUrl];
     }
 
-    // If the url doesn't match the creatornode[0-9]* pattern we can't continue since this makes no sense.
+    // If the url doesn't match the creatornode[0-9]* pattern we can't
+    // continue since this makes no sense.
     if (!RegExp(
       "http[s]*:\/\/creatornode[0-9]{0,1}\.audius\.co[.]*",
       caseSensitive: false,
@@ -482,6 +506,7 @@ class TrendingTime {
   toString() => '$_value';
 
   /// Creates a new instance from a string value.
+  ///
   /// Throws Exception if it couldn't it due to an invalid parameter.
   static TrendingTime fromString(String value) {
     if (value == TrendingTime.ALL.toString()) {
@@ -510,7 +535,8 @@ class APIException implements Exception {
     this.errorType = "Unespecified",
     this.innerException,
   }) {
-    // If we print the error here then we don't need to call print all the time.
+    // If we print the error here then we don't need to call it all the
+    // time.
     print(this.toString());
   }
 

@@ -15,8 +15,9 @@
 // Original source code at https://github.com/iampawan/Flutter-Music-Player
 
 // Modifications copyright (C) 2021 Irian Montón Beltrán
-// Changed name of the original file from 'mp_album_ui.dart' to the current one.
-// Simplified file by removing animations and progress bar.
+//
+// Changed name of the original file from 'mp_album_ui.dart' to the current
+// one. Simplified file by removing animations and progress bar.
 
 // Copyright (c) 2021 Irian Montón Beltrán
 //

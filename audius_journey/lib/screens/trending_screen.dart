@@ -31,10 +31,13 @@ class _TrendingScreenState extends State<TrendingScreen> {
           .getTrendingTracks(time: context.read<AppState>().trendingTime);
 
       if (result.asValue != null) {
-        // We need a trending tracks list to display to the user. This is the list to display.
+        // We need a trending tracks list to display to the user. This is
+        // the list to display.
         context.read<AppState>().trendingTracks = result.asValue!.value;
 
-        // And then a separate list of the algorithm because this gets sorted internally. This is the list to choose tracks automatically.
+        // And then a separate list of the algorithm because this gets
+        // sorted internally. This is the list to choose tracks
+        // automatically.
         context
             .read<AlgorithmState>()
             .initialise(context.read<AppState>().trendingTracks);
