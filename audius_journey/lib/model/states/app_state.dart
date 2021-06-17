@@ -16,7 +16,8 @@ class AppState with ChangeNotifier {
   Color _themeColor = Colors.blue;
   Color get themeColor => _themeColor;
   set themeColor(Color value) {
-    // We only save a color if it's a MaterialColor. Well, the shade 500, which is the reference (the base value) for every MaterialColor.
+    // We only save a color if it's a MaterialColor. Well, the shade 500,
+    // which is the reference (the base value) for every MaterialColor.
     if (value != _themeColor && this._isMaterialColor(value)) {
       _themeColor =
           Colors.primaries.firstWhere((mColor) => mColor.value == value.value);
@@ -54,7 +55,8 @@ class AppState with ChangeNotifier {
     }
   }
 
-  // This is to have a centralised way to know about exceptions and notify the user if needed.
+  // This is to have a centralised way to know about exceptions and notify
+  // the user if needed.
   final Queue<Exception> _errorsList = Queue();
   Exception? get lastError {
     try {

@@ -11,10 +11,15 @@ import 'package:audius_journey/model/track_score.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Handles the song recommendation algorithm. Assigns scores at each song depending on what the user action was.
-/// For example, if the user tapped the downvote (thumb down) button then a -2 score to that artist, genre and mood is assigned globally.
-/// Then with these global score each song calculates its own score. That way the algorithm can recommend the next song, based on a favourable score.
-/// This class is not saved in the permanent storage since its assumed the user may have different preferenes on a given day, and it's better to start fresh each time. So if the app is killed, the score resets to 0.
+/// Handles the song recommendation algorithm. Assigns scores at each song
+/// depending on what the user action was. For example, if the user tapped
+/// the downvote (thumb down) button then a -2 score to that artist, genre
+/// and mood is assigned globally. Then with these global score each song
+/// calculates its own score. That way the algorithm can recommend the next
+/// song, based on a favourable score. This class is not saved in the
+/// permanent storage since its assumed the user may have different
+/// preferenes on a given day, and it's better to start fresh each time. So
+/// if the app is killed, the score resets to 0.
 class AlgorithmState with ChangeNotifier {
   static final String _TAG = "AlgorithmState: ";
   final ScoreFactors _scoreFactors = ScoreFactors();
@@ -35,8 +40,10 @@ class AlgorithmState with ChangeNotifier {
   AlgorithmState(this.context);
 
   void initialise(List<TrackInfo> tracks) {
-    // If it is not initialied we just create the whole list, if it is we only add the new songs we detected as trending.
-    // We want to keep the old ones because even though they are not anymore in the trending list, maybe the user wants to listen them again.
+    // If it is not initialied we just create the whole list, if it is we
+    // only add the new songs we detected as trending. We want to keep the
+    // old ones because even though they are not anymore in the trending
+    // list, maybe the user wants to listen them again.
     if (!this.initialised) {
       this._tracksPlayList = tracks
           .map(
@@ -69,7 +76,9 @@ class AlgorithmState with ChangeNotifier {
       this._currentTrack = value;
 
       if (value == null) {
-        // We set error tries to 0 because if we deliverately let the track be null is the behaviour that we want to keep, and avoid further trying.
+        // We set error tries to 0 because if we deliverately let the track
+        // be null is the behaviour that we want to keep, and avoid further
+        // trying.
         this._errorTries = 0;
         print(_TAG + "Set current track to NULL");
       } else {
@@ -84,7 +93,9 @@ class AlgorithmState with ChangeNotifier {
   }
 
   /// Manually set [currentTrack] to a specific track.
-  /// Passing null means no track is being played, in other words, stop playing any tracks.
+  ///
+  /// Passing null means no track is being played, in other words, stop
+  /// playing any tracks.
   void setCurrentTrack({
     required TrackInfo? track,
     bool tryWithAnotherTrack = false,
@@ -123,7 +134,9 @@ class AlgorithmState with ChangeNotifier {
     this.currentTrack?.playOrder = this._playOrderTracker;
   }
 
-  /// Updates [currentTrack] to the next track chosen by the recommendation algorithm.
+  /// Updates [currentTrack] to the next track chosen by the recommendation
+  /// algorithm.
+  ///
   /// If [toPrevious] is true then the next track will be the previous one.
   void _chooseNextTrack({required bool toPrevious}) {
     if (this._tracksPlayList.length != 0) {
@@ -155,7 +168,8 @@ class AlgorithmState with ChangeNotifier {
 
             this._setCurrentTrackSR(previousTrack);
           } catch (e) {
-            // If this was unsuccessful we need to revert the play order to where it was.
+            // If this was unsuccessful we need to revert the play order to
+            // where it was.
             this._playOrderTracker++;
           }
         }
@@ -163,8 +177,11 @@ class AlgorithmState with ChangeNotifier {
     }
   }
 
-  /// Handles what to do depending on with which [action] the user interacted with the player.
-  /// If [track] is not passed or is passed as null it is assumed as the current track.
+  /// Handles what to do depending on with which [action] the user
+  /// interacted with the player.
+  ///
+  /// If [track] is not passed or is passed as null it is assumed as the
+  /// current track.
   void handleUserAction({TrackInfo? track, required TrackAction action}) {
     track = track ?? this._currentTrack;
     if (track == null || context.read<PlayerState>().isLoading) {
@@ -177,14 +194,17 @@ class AlgorithmState with ChangeNotifier {
     if (trackSR != null) {
       // UPDATING TRACK SCORE.
       //
-      // We don't want to update the score of a previously rated song. In other words, the global score is only influenced by never played before songs.
-      // If the song was played before, then [lastRatingAction] will be different than NONE.
+      // We don't want to update the score of a previously rated song. In
+      // other words, the global score is only influenced by never played
+      // before songs. If the song was played before, then
+      // [lastRatingAction] will be different than NONE.
       if (trackSR.lastRatingAction == TrackAction.NONE) {
         this._updateGlobalScores(track: track, action: action);
 
         this._tracksPlayList.forEach((ts) => ts.updateTotalScore());
 
-        // Saving last action so we can register what the user did with this track.
+        // Saving last action so we can register what the user did with
+        // this track.
         trackSR.lastRatingAction = action;
 
         notifyListeners();
@@ -208,7 +228,8 @@ class AlgorithmState with ChangeNotifier {
     }
   }
 
-  /// Updates the global score depending on how the user interacted with that [track] via [action].
+  /// Updates the global score depending on how the user interacted with
+  /// that [track] via [action].
   void _updateGlobalScores({
     required TrackInfo track,
     required TrackAction action,
@@ -223,7 +244,9 @@ class AlgorithmState with ChangeNotifier {
     //     print(_TAG + "Top 10 track with score non 0: " + ts.toString()));
   }
 
-  /// Defines how many points to allocate depending on user interaction. F.e. If the user skipped a song we interpret he didn't liked it much so we substract points.
+  /// Defines how many points to allocate depending on user interaction.
+  /// F.e. If the user skipped a song we interpret he didn't liked it much
+  /// so we substract points.
   int _calcScoreByAction(TrackAction action) {
     switch (action) {
       case TrackAction.PLAYED:
@@ -241,7 +264,8 @@ class AlgorithmState with ChangeNotifier {
     }
   }
 
-  // Tries to finde the Track Score Record that belongs to a specific track. If can't find it it returns null.
+  // Tries to finde the Track Score Record that belongs to a specific
+  // track. If can't find it it returns null.
   TrackScore? _getTrackSRbyTrack(TrackInfo track) {
     try {
       return this._tracksPlayList.firstWhere((ts) => ts == track);
