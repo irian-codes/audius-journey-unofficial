@@ -1,3 +1,6 @@
+# Install package dart_code_metrics as a global package and run it as a console command if you want to use this file.
+# I basically don't use it as a dev dependency because it's slow as hell sometimes.
+
 analyzer:
   plugins:
     - dart_code_metrics
