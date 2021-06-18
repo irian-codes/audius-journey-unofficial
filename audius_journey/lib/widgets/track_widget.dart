@@ -67,7 +67,20 @@ class TrackWidget extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Mood: ${trackInfo.mood ?? "Unespecified"}"),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Genre: ${trackInfo.genre ?? "Unespecified"}",
+                              textAlign: TextAlign.start,
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              "Mood: ${trackInfo.mood ?? "Unespecified"}",
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
                         Text(
                           "Duration: ${trackInfo.getFormattedTrackDuration()}",
                         ),
