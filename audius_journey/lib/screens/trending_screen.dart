@@ -117,6 +117,8 @@ class _TrendingScreenState extends State<TrendingScreen> {
           ),
         ],
       ),
+      backgroundColor:
+          (context.read<AppState>().themeColor as MaterialColor).shade100,
       body: Container(
         child: FutureBuilder<List<TrackInfo>>(
           future: this._trendingTracksFuture,
