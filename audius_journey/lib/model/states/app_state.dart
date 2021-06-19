@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class AppState with ChangeNotifier {
   static final String _TAG = "AppState: ";
 
-  Color _themeColor = Colors.blue;
+  Color _themeColor = Colors.purple;
   Color get themeColor => _themeColor;
   set themeColor(Color value) {
     // We only save a color if it's a MaterialColor. Well, the shade 500,
